@@ -19,14 +19,14 @@ public class BaritoneQueue extends Module {
 
     private final Setting<List<String>> tasks = sgGeneral.add(new StringListSetting.Builder()
         .name("tasks")
-        .description("Lista de comandos ou mensagens para executar em ordem (ex: #mine diamond_ore, #goto 0 64 0, /home).")
+        .description("A list of commands or chat messages to execute sequentially (e.g. #mine diamond_ore, #goto 0 64 0, /home).")
         .defaultValue(List.of("#mine diamond_ore", "#goto 0 64 0"))
         .build()
     );
 
     private final Setting<Integer> delaySeconds = sgGeneral.add(new IntSetting.Builder()
         .name("delay-seconds")
-        .description("Tempo de espera em segundos para comandos comuns ou transição entre tarefas.")
+        .description("The duration in seconds to wait before executing the next command or task in the queue.")
         .defaultValue(10)
         .min(1)
         .max(600)
@@ -35,14 +35,14 @@ public class BaritoneQueue extends Module {
 
     private final Setting<Boolean> waitForBaritone = sgGeneral.add(new BoolSetting.Builder()
         .name("wait-for-baritone")
-        .description("Se o comando começar com #, aguardar mensagem de conclusão do Baritone no chat.")
+        .description("If enabled and the command starts with '#', the queue will wait for Baritone's completion/termination message in the chat before moving on.")
         .defaultValue(true)
         .build()
     );
 
     private final Setting<Boolean> loop = sgGeneral.add(new BoolSetting.Builder()
         .name("loop")
-        .description("Reiniciar a lista do começo após concluir todas as tarefas.")
+        .description("Whether to restart the task queue from the first item once all tasks have been completed.")
         .defaultValue(false)
         .build()
     );
@@ -52,7 +52,7 @@ public class BaritoneQueue extends Module {
     private boolean taskStarted = false;
 
     public BaritoneQueue() {
-        super(AddonTemplate.CATEGORY, "baritone-queue", "Executa uma lista sequencial de tarefas do Baritone e comandos de chat.");
+        super(AddonTemplate.CATEGORY, "baritone-queue", "Executes a sequential list of Baritone tasks and standard chat commands.");
     }
 
     @Override
@@ -68,17 +68,17 @@ public class BaritoneQueue extends Module {
 
         List<String> list = tasks.get();
         if (list == null || list.isEmpty()) {
-            warning("A lista de tarefas está vazia.");
+            warning("The task queue list is empty.");
             toggle();
             return;
         }
 
         if (currentIndex >= list.size()) {
             if (loop.get()) {
-                info("Fila concluída. Reiniciando em loop...");
+                info("Queue finished. Restarting in loop...");
                 currentIndex = 0;
             } else {
-                info("Fila de tarefas do Baritone concluída com sucesso!");
+                info("Baritone task queue successfully completed!");
                 toggle();
                 return;
             }
@@ -96,7 +96,7 @@ public class BaritoneQueue extends Module {
         }
 
         if (!taskStarted) {
-            info("Iniciando tarefa [" + (currentIndex + 1) + "/" + list.size() + "]: " + currentTask);
+            info("Starting task [" + (currentIndex + 1) + "/" + list.size() + "]: " + currentTask);
             ChatUtils.sendPlayerMsg(currentTask.trim());
             taskStarted = true;
 
@@ -127,7 +127,7 @@ public class BaritoneQueue extends Module {
                 msg.contains("Done") || msg.contains("Pathing complete") ||
                 msg.contains("Canceled") || msg.contains("Unable to find")
             )) {
-                info("Conclusão detectada pelo Baritone. Avançando para a próxima tarefa...");
+                info("Baritone completion detected. Advancing to the next task...");
                 advance();
             }
         }

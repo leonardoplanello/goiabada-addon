@@ -15,8 +15,8 @@ import java.util.List;
 
 public class RestrictedArea extends Module {
     public enum AreaMode {
-        Radius("Raio"),
-        BoundingBox("Caixa Delimitadora");
+        Radius("Radius"),
+        BoundingBox("Bounding Box");
 
         private final String name;
         AreaMode(String name) { this.name = name; }
@@ -24,20 +24,20 @@ public class RestrictedArea extends Module {
     }
 
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-    private final SettingGroup sgZone = settings.createGroup("Zona");
-    private final SettingGroup sgExceptions = settings.createGroup("Exceções");
+    private final SettingGroup sgZone = settings.createGroup("Zone");
+    private final SettingGroup sgExceptions = settings.createGroup("Exceptions");
 
     private final Setting<AreaMode> mode = sgGeneral.add(new EnumSetting.Builder<AreaMode>()
         .name("mode")
-        .description("Modo de definição da zona restrita.")
+        .description("Selects how the restricted area zone is defined: Radius (circle around center) or Bounding Box (cuboid coordinates).")
         .defaultValue(AreaMode.Radius)
         .build()
     );
 
-    // Modo Raio
+    // Radius Mode
     private final Setting<Double> centerX = sgZone.add(new DoubleSetting.Builder()
         .name("center-x")
-        .description("Coordenada X do centro da zona.")
+        .description("X coordinate for the center of the circular restricted zone.")
         .defaultValue(0.0)
         .visible(() -> mode.get() == AreaMode.Radius)
         .build()
@@ -45,7 +45,7 @@ public class RestrictedArea extends Module {
 
     private final Setting<Double> centerZ = sgZone.add(new DoubleSetting.Builder()
         .name("center-z")
-        .description("Coordenada Z do centro da zona.")
+        .description("Z coordinate for the center of the circular restricted zone.")
         .defaultValue(0.0)
         .visible(() -> mode.get() == AreaMode.Radius)
         .build()
@@ -53,17 +53,17 @@ public class RestrictedArea extends Module {
 
     private final Setting<Double> radius = sgZone.add(new DoubleSetting.Builder()
         .name("radius")
-        .description("Raio da zona restrita em blocos.")
+        .description("The radius of the restricted zone in blocks.")
         .defaultValue(50.0)
         .min(1.0)
         .visible(() -> mode.get() == AreaMode.Radius)
         .build()
     );
 
-    // Modo BoundingBox
+    // BoundingBox Mode
     private final Setting<Double> minX = sgZone.add(new DoubleSetting.Builder()
         .name("min-x")
-        .description("Coordenada mínima X da zona.")
+        .description("Minimum X coordinate of the bounding box restricted zone.")
         .defaultValue(-50.0)
         .visible(() -> mode.get() == AreaMode.BoundingBox)
         .build()
@@ -71,7 +71,7 @@ public class RestrictedArea extends Module {
 
     private final Setting<Double> maxX = sgZone.add(new DoubleSetting.Builder()
         .name("max-x")
-        .description("Coordenada máxima X da zona.")
+        .description("Maximum X coordinate of the bounding box restricted zone.")
         .defaultValue(50.0)
         .visible(() -> mode.get() == AreaMode.BoundingBox)
         .build()
@@ -79,7 +79,7 @@ public class RestrictedArea extends Module {
 
     private final Setting<Double> minZ = sgZone.add(new DoubleSetting.Builder()
         .name("min-z")
-        .description("Coordenada mínima Z da zona.")
+        .description("Minimum Z coordinate of the bounding box restricted zone.")
         .defaultValue(-50.0)
         .visible(() -> mode.get() == AreaMode.BoundingBox)
         .build()
@@ -87,7 +87,7 @@ public class RestrictedArea extends Module {
 
     private final Setting<Double> maxZ = sgZone.add(new DoubleSetting.Builder()
         .name("max-z")
-        .description("Coordenada máxima Z da zona.")
+        .description("Maximum Z coordinate of the bounding box restricted zone.")
         .defaultValue(50.0)
         .visible(() -> mode.get() == AreaMode.BoundingBox)
         .build()
@@ -95,7 +95,7 @@ public class RestrictedArea extends Module {
 
     private final Setting<List<String>> exceptions = sgExceptions.add(new StringListSetting.Builder()
         .name("exceptions")
-        .description("Lista de nomes (ou títulos) dos módulos que NÃO serão desativados ao entrar na área.")
+        .description("List of module names or titles that will NOT be disabled when inside the restricted area.")
         .defaultValue(List.of("click-gui", "hud", "restricted-area", "spectator-guard"))
         .build()
     );
@@ -103,7 +103,7 @@ public class RestrictedArea extends Module {
     private boolean wasInside = false;
 
     public RestrictedArea() {
-        super(AddonTemplate.CATEGORY, "restricted-area", "Desativa automaticamente todos os módulos ao entrar em uma zona restrita.");
+        super(AddonTemplate.CATEGORY, "restricted-area", "Automatically disables all active modules (except specified exclusions) when inside a defined restricted zone.");
     }
 
     @EventHandler
@@ -123,7 +123,7 @@ public class RestrictedArea extends Module {
 
         if (inside) {
             if (!wasInside) {
-                warning("Você entrou na Área Restrita! Desativando módulos não permitidos.");
+                warning("You entered the Restricted Area! Disabling unauthorized modules.");
             }
             disableModules();
         }
@@ -151,7 +151,7 @@ public class RestrictedArea extends Module {
 
             if (!isExempt) {
                 mod.toggle();
-                info("Módulo " + mod.title + " desativado pela Área Restrita.");
+                info("Module " + mod.title + " disabled by the Restricted Area.");
             }
         }
     }

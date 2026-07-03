@@ -19,7 +19,7 @@ public class SpectatorGuardHud extends HudElement {
     public static final HudElementInfo<SpectatorGuardHud> INFO = new HudElementInfo<>(
         GROUP,
         "spectator-guard-hud",
-        "Mostra se o SpectatorGuard está ativo.",
+        "Displays whether SpectatorGuard is active or not.",
         SpectatorGuardHud::new
     );
 

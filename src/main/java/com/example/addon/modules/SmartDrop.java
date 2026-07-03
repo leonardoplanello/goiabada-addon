@@ -18,8 +18,8 @@ import java.util.List;
 
 public class SmartDrop extends Module {
     public enum DropMode {
-        Whitelist("Permitidos (Dropa o resto)"),
-        Blacklist("Bloqueados (Dropa selecionados)");
+        Whitelist("Whitelist (Drop all else)"),
+        Blacklist("Blacklist (Drop selected)");
 
         private final String name;
         DropMode(String name) { this.name = name; }
@@ -30,21 +30,21 @@ public class SmartDrop extends Module {
 
     private final Setting<DropMode> mode = sgGeneral.add(new EnumSetting.Builder<DropMode>()
         .name("mode")
-        .description("Modo de verificação dos itens selecionados.")
+        .description("Filter mode: Whitelist (keep listed items, drop everything else) or Blacklist (drop listed items, keep everything else).")
         .defaultValue(DropMode.Whitelist)
         .build()
     );
 
     private final Setting<List<Item>> items = sgGeneral.add(new ItemListSetting.Builder()
         .name("items")
-        .description("Lista de itens selecionados para Whitelist ou Blacklist.")
+        .description("The list of items to filter for whitelisting or blacklisting.")
         .defaultValue(List.of())
         .build()
     );
 
     private final Setting<Integer> delayTicks = sgGeneral.add(new IntSetting.Builder()
         .name("delay-ticks")
-        .description("Intervalo em ticks entre cada drop para evitar kicks por anti-cheat.")
+        .description("The delay in game ticks between dropping items to prevent server anti-cheat kicks.")
         .defaultValue(3)
         .min(0)
         .max(40)
@@ -53,7 +53,7 @@ public class SmartDrop extends Module {
 
     private final Setting<Boolean> ignoreHotbar = sgGeneral.add(new BoolSetting.Builder()
         .name("ignore-hotbar")
-        .description("Ignorar os itens na barra de atalhos (hotbar) durante o drop.")
+        .description("If enabled, items inside your hotbar slots will not be dropped.")
         .defaultValue(true)
         .build()
     );
@@ -61,7 +61,7 @@ public class SmartDrop extends Module {
     private int timer = 0;
 
     public SmartDrop() {
-        super(AddonTemplate.CATEGORY, "smart-drop", "Descarte automático inteligente baseado em Whitelist ou Blacklist.");
+        super(AddonTemplate.CATEGORY, "smart-drop", "Automatically and intelligently discards items from the inventory based on a Whitelist or Blacklist configuration.");
     }
 
     @Override

@@ -75,11 +75,11 @@ public class SpectatorGuard extends Module {
             serverData = mc.getConnection().getServerData();
         }
 
-        String playerName = entry != null && entry.getProfile() != null ? entry.getProfile().name() : "Desconhecido";
-        String modeName = gm != null ? gm.getName() : "Desconhecido";
+        String playerName = entry != null && entry.getProfile() != null ? entry.getProfile().name() : "Unknown";
+        String modeName = gm != null ? gm.getName() : "Unknown";
 
         Component title = Component.literal("§cDisconnected by SpectatorGuard");
-        Component reason = Component.literal("§eMotivo / Reason:\n§fDetectado jogador §b" + playerName + " §fno modo §c" + modeName + "§f.");
+        Component reason = Component.literal("§eReason:\n§fDetected player §b" + playerName + " §fin §c" + modeName + "§f mode.");
 
         if (mc.level != null) {
             mc.level.disconnect(title);

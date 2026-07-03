@@ -54,38 +54,37 @@ public class Defense extends Module {
     }
 
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
-    private final SettingGroup sgProtection = settings.createGroup("Proteção");
-    private final SettingGroup sgSpeed = settings.createGroup("Velocidade");
-    private final SettingGroup sgDodge = settings.createGroup("Desvio (Dodge)");
+    private final SettingGroup sgProtection = settings.createGroup("Protection");
+    private final SettingGroup sgDodge = settings.createGroup("Dodge");
 
-    // Geral
+    // General
     private final Setting<Boolean> pauseBaritone = sgGeneral.add(new BoolSetting.Builder()
         .name("pause-baritone")
-        .description("Pausa automaticamente o Baritone (#pause) em perigo e retoma (#resume) em segurança.")
+        .description("Automatically pauses active Baritone processes (#pause) when in danger and resumes them (#resume) when safety is restored.")
         .defaultValue(true)
         .build()
     );
 
     private final Setting<Integer> resumeDelay = sgGeneral.add(new IntSetting.Builder()
         .name("resume-delay-seconds")
-        .description("Tempo de segurança em segundos sem ameaças antes de retomar o Baritone.")
+        .description("The safety cooldown duration in seconds with no threats present before resuming Baritone.")
         .defaultValue(2)
         .min(1)
         .max(15)
         .build()
     );
 
-    // Proteção
+    // Protection
     private final Setting<Boolean> protectMobs = sgProtection.add(new BoolSetting.Builder()
         .name("protect-mobs")
-        .description("Ativa defesa inteligente com movimentação tática e fuga rápida contra monstros.")
+        .description("Enables intelligent defense actions, such as tactical movement, shield blocking, and speed boosts, when hostile mobs are nearby.")
         .defaultValue(true)
         .build()
     );
 
     private final Setting<Double> dangerRadius = sgProtection.add(new DoubleSetting.Builder()
         .name("danger-radius")
-        .description("Raio de detecção proativa para monstros ao redor.")
+        .description("The radius in blocks within which hostile mobs are detected to trigger defense mode.")
         .defaultValue(6.0)
         .min(2.0)
         .max(15.0)
@@ -95,73 +94,77 @@ public class Defense extends Module {
 
     private final Setting<Boolean> fleeMobs = sgProtection.add(new BoolSetting.Builder()
         .name("flee-mobs")
-        .description("Foge dos monstros usando o Baritone de forma segura (evitando buracos, lava, etc).")
+        .description("Commands Baritone to run away from nearby hostile mobs, navigating safely by avoiding holes, lava, and other environmental hazards.")
         .defaultValue(true)
         .visible(protectMobs::get)
         .build()
     );
 
+    private final Setting<Double> fleeSpeedVal = sgProtection.add(new DoubleSetting.Builder()
+        .name("flee-speed")
+        .description("The speed multiplier temporarily applied to Meteor's Speed module when fleeing from threats.")
+        .defaultValue(8.0)
+        .min(1.0)
+        .max(20.0)
+        .visible(fleeMobs::get)
+        .build()
+    );
+
     private final Setting<Boolean> protectPlayers = sgProtection.add(new BoolSetting.Builder()
         .name("protect-players")
-        .description("Ativa defesa contra ataques de outros jogadores.")
+        .description("Enables tactical defense and evasion when attacked by other players.")
         .defaultValue(false)
         .build()
     );
 
     private final Setting<Boolean> protectLava = sgProtection.add(new BoolSetting.Builder()
         .name("protect-lava")
-        .description("Ativa resgate com balde de água e salto de emergência ao cair em lava ou fogo.")
+        .description("Enables automatic water bucket rescue placement and emergency jumping when falling into lava or fire.")
         .defaultValue(true)
         .build()
     );
 
-    // Velocidade
-    private final Setting<Double> fleeSpeedVal = sgSpeed.add(new DoubleSetting.Builder()
-        .name("flee-speed-value")
-        .description("Valor temporário de speed para configurar no módulo Speed do Meteor ao fugir.")
-        .defaultValue(8.0)
-        .min(1.0)
-        .max(20.0)
-        .build()
-    );
-
-    // Desvio (Dodge)
+    // Dodge
     private final Setting<Boolean> dodgeMobs = sgDodge.add(new BoolSetting.Builder()
         .name("dodge-mobs")
-        .description("Desvia de monstros terrestres/corpo a corpo usando movimentação rápida (estilo Arrow Dodge).")
+        .description("Enables rapid dodge/evasion movement (Arrow Dodge style) to escape close-range melee monsters.")
         .defaultValue(true)
         .build()
     );
 
     private final Setting<MoveType> moveType = sgDodge.add(new EnumSetting.Builder<MoveType>()
         .name("move-type")
-        .description("Como você é movido ao desviar de monstros.")
+        .description("The movement implementation method used to dodge mobs: Velocity (directly modifies player velocity) or Packet (sends movement packets to the server).")
         .defaultValue(MoveType.Velocity)
+        .visible(dodgeMobs::get)
         .build()
     );
 
     private final Setting<Double> moveSpeed = sgDodge.add(new DoubleSetting.Builder()
-        .name("move-speed")
-        .description("Velocidade de desvio rápida.")
+        .name("dodge-speed")
+        .description("The speed/velocity step size applied when performing dodge evasion movements.")
         .defaultValue(1.0)
         .min(0.01)
         .sliderRange(0.01, 5.0)
+        .visible(dodgeMobs::get)
         .build()
     );
 
     private final Setting<Double> distanceCheck = sgDodge.add(new DoubleSetting.Builder()
         .name("distance-check")
-        .description("Distância mínima dos monstros antes de tentar desviar.")
+        .description("The safety threshold distance in blocks; triggers a dodge when a hostile mob is closer than this distance.")
         .defaultValue(4.0)
         .min(1.0)
         .sliderRange(1.0, 10.0)
+        .visible(dodgeMobs::get)
         .build()
     );
 
     private final Setting<Boolean> groundCheck = sgDodge.add(new BoolSetting.Builder()
         .name("ground-check")
-        .description("Evita cair de precipícios ao desviar.")
+        .description("Checks if the destination ground is solid to prevent dodging off high cliffs or into holes.")
         .defaultValue(true)
+        .visible(dodgeMobs::get)
         .build()
     );
 
@@ -198,7 +201,7 @@ public class Defense extends Module {
     private boolean holdingRight = false;
 
     public Defense() {
-        super(AddonTemplate.CATEGORY, "defense", "Protege o jogador contra mobs, lava e perigos com escudo, desvio de lava e aumento de velocidade.");
+        super(AddonTemplate.CATEGORY, "defense", "Protects the player against mobs, lava, and general hazards using a shield, lava rescue, and speed boosts.");
     }
 
     @Override
@@ -267,7 +270,7 @@ public class Defense extends Module {
                     restoreModules();
                     currentState = State.COOLDOWN_RESUME;
                     safetyTimer = resumeDelay.get() * 20;
-                    info("Lava/fogo superado! Aguardando segurança para retomar.");
+                    info("Lava/fire cleared! Waiting for safe conditions to resume.");
                 } else {
                     handleLavaRescue();
                 }
@@ -291,7 +294,7 @@ public class Defense extends Module {
                     restoreModules();
                     currentState = State.COOLDOWN_RESUME;
                     safetyTimer = resumeDelay.get() * 20;
-                    info("Ameaça eliminada! Aguardando área limpa para retomar.");
+                    info("Threat cleared! Waiting for safety cooldown to resume.");
                 } else {
                     handleMobDefense(target);
                     if (fleeMobs.get()) {
@@ -321,7 +324,7 @@ public class Defense extends Module {
                 if (safetyTimer > 0) {
                     safetyTimer--;
                 } else {
-                    info("Segurança restabelecida.");
+                    info("Safety restored.");
                     if (pausedByUs && pauseBaritone.get()) {
                         ChatUtils.sendPlayerMsg("#resume");
                         pausedByUs = false;
@@ -333,11 +336,13 @@ public class Defense extends Module {
     }
 
     private void enterDefenseState(State newState) {
-        info("Entrando no modo de defesa: " + newState);
+        info("Entering defense state: " + newState);
         currentState = newState;
-        if (!pausedByUs && pauseBaritone.get() && newState == State.RESCUING_LAVA) {
-            ChatUtils.sendPlayerMsg("#pause");
-            pausedByUs = true;
+        if (!pausedByUs && pauseBaritone.get()) {
+            if (newState == State.RESCUING_LAVA || (newState == State.DEFENDING_MOB && !fleeMobs.get())) {
+                ChatUtils.sendPlayerMsg("#pause");
+                pausedByUs = true;
+            }
         }
     }
 
@@ -363,7 +368,7 @@ public class Defense extends Module {
             Object currentGoal = getBaritoneGoal();
             if (currentGoal != null && !currentGoal.getClass().getName().contains("GoalRunAway")) {
                 previousGoal = currentGoal;
-                info("Salvando objetivo anterior do Baritone: " + currentGoal.getClass().getSimpleName());
+                info("Saving previous Baritone goal: " + currentGoal.getClass().getSimpleName());
             }
 
             Class<?> goalClass = Class.forName("baritone.api.pathing.goals.GoalRunAway");
@@ -377,7 +382,7 @@ public class Defense extends Module {
 
             setGoalAndPathMethod.invoke(customGoalProcess, goalInstance);
         } catch (NoClassDefFoundError | Exception e) {
-            info("Erro ao iniciar fuga com Baritone: " + e.getMessage());
+            info("Error starting Baritone flee: " + e.getMessage());
         }
     }
 
@@ -391,7 +396,7 @@ public class Defense extends Module {
             Class<?> goalInterface = Class.forName("baritone.api.pathing.goals.Goal");
 
             if (previousGoal != null) {
-                info("Restaurando objetivo anterior do Baritone...");
+                info("Restoring previous Baritone goal...");
                 java.lang.reflect.Method setGoalAndPathMethod = customGoalProcess.getClass().getMethod("setGoalAndPath", goalInterface);
                 setGoalAndPathMethod.invoke(customGoalProcess, previousGoal);
                 previousGoal = null;
@@ -486,7 +491,7 @@ public class Defense extends Module {
     private void handleMobDefense(LivingEntity target) {
         if (mc.player == null || mc.options == null) return;
 
-        // Combate (Mirar e atacar o mob se estiver perto)
+        // Combat (Aim and attack the mob if nearby)
         double cdx = target.getX() - mc.player.getX();
         double cdy = target.getEyeY() - mc.player.getEyeY();
         double cdz = target.getZ() - mc.player.getZ();
@@ -522,7 +527,7 @@ public class Defense extends Module {
     private boolean isEating() {
         if (mc.player == null) return false;
 
-        // Verificar se o próprio jogador está usando um item comestível
+        // Check if player is currently eating or drinking a consumable
         if (mc.player.isUsingItem()) {
             ItemStack useItem = mc.player.getUseItem();
             if (!useItem.isEmpty() && (useItem.get(DataComponents.FOOD) != null || useItem.is(Items.POTION) || useItem.is(Items.MILK_BUCKET))) {
@@ -530,7 +535,7 @@ public class Defense extends Module {
             }
         }
 
-        // Verificar se o módulo AutoEat está ativo e comendo
+        // Check if the AutoEat module is active and eating
         try {
             AutoEat autoEat = Modules.get().get(AutoEat.class);
             if (autoEat != null && autoEat.isActive() && autoEat.eating) {
@@ -538,7 +543,7 @@ public class Defense extends Module {
             }
         } catch (NoClassDefFoundError | Exception ignored) {}
 
-        // Verificar se o módulo AutoGap está ativo e comendo
+        // Check if the AutoGap module is active and eating
         try {
             AutoGap autoGap = Modules.get().get(AutoGap.class);
             if (autoGap != null && autoGap.isEating()) {

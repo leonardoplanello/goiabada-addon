@@ -22,35 +22,35 @@ public class AutoShield extends Module {
 
     private final Setting<Boolean> onlyWhenEquipped = sgGeneral.add(new BoolSetting.Builder()
         .name("only-when-equipped")
-        .description("Segura o clique direito apenas se houver um escudo na mão principal ou secundária.")
+        .description("Only hold right-click to block if a shield is equipped in either the main hand or off-hand.")
         .defaultValue(true)
         .build()
     );
 
     private final Setting<Boolean> pauseOnEat = sgGeneral.add(new BoolSetting.Builder()
         .name("pause-on-eat")
-        .description("Pausa a defesa com escudo quando precisar comer ou quando o AutoEat estiver ativo.")
+        .description("Pauses shield blocking when eating or when the AutoEat module is active to prevent action conflicts.")
         .defaultValue(true)
         .build()
     );
 
     private final Setting<Boolean> pauseInScreens = sgGeneral.add(new BoolSetting.Builder()
         .name("pause-in-screens")
-        .description("Pausa a defesa em telas abertas (inventário, baús, chat) para evitar conflitos de clique.")
+        .description("Pauses shield blocking while inventory, chat, chests, or other screens are open to prevent GUI click interference.")
         .defaultValue(true)
         .build()
     );
 
     private final Setting<Boolean> pauseLookingAtContainers = sgGeneral.add(new BoolSetting.Builder()
         .name("pause-looking-at-containers")
-        .description("Pausa a defesa se a visão (mira) estiver apontada para um contêiner (baú, fornalha, etc.).")
+        .description("Pauses shield blocking when looking directly at interactive blocks like chests, furnaces, anvils, and crafting tables.")
         .defaultValue(true)
         .build()
     );
 
     private final Setting<Boolean> strictHandCheck = sgGeneral.add(new BoolSetting.Builder()
         .name("strict-hand-check")
-        .description("Funciona somente se a mão principal segurar Picareta, Espada, Machado, Escudo ou estiver vazia.")
+        .description("Allows shield blocking only when the main hand is empty, holding a shield, a sword, or tools (axe, pickaxe) to prevent unintended actions.")
         .defaultValue(true)
         .build()
     );
@@ -58,7 +58,7 @@ public class AutoShield extends Module {
     private boolean wasHolding = false;
 
     public AutoShield() {
-        super(AddonTemplate.CATEGORY, "auto-shield", "Segura o escudo (Hold Right Click) de forma contínua sem conflitar com AutoEat ou baús.");
+        super(AddonTemplate.CATEGORY, "auto-shield", "Continuously holds up the shield (right-click) while avoiding conflicts with AutoEat, screen menus, or interactive containers.");
     }
 
     @Override

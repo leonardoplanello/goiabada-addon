@@ -34,7 +34,7 @@ public class SpectatorGuardDisconnectScreen extends DisconnectedScreen {
         boolean canReconnect = (serverData != null && serverData.ip != null && !serverData.ip.isEmpty());
 
         Button reconnectBtn = Button.builder(
-            Component.literal(canReconnect ? "Reconectar / Reconnect" : "Reconectar (Sem Dados do Servidor)"),
+            Component.literal(canReconnect ? "Reconnect" : "Reconnect (No Server Data)"),
             button -> {
                 if (canReconnect && this.minecraft != null) {
                     ConnectScreen.startConnecting(
@@ -53,7 +53,7 @@ public class SpectatorGuardDisconnectScreen extends DisconnectedScreen {
         this.addRenderableWidget(reconnectBtn);
 
         Button serverListBtn = Button.builder(
-            Component.literal("Lista de Servidores / Go to Server List"),
+            Component.literal("Go to Server List"),
             button -> {
                 if (this.minecraft != null) {
                     this.minecraft.setScreen(new JoinMultiplayerScreen(new TitleScreen()));

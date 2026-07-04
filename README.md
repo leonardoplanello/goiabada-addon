@@ -1,16 +1,17 @@
-# Goiabada Addon for Meteor Client
+# Goiabada Addon
+> **by goiabada___**
 
-![Meteor Client Addon](https://img.shields.io/badge/Meteor%20Client-Addon-purple?style=for-the-badge)
+![Utility Addon](https://img.shields.io/badge/Utility-Addon-purple?style=for-the-badge)
 ![Minecraft](https://img.shields.io/badge/Minecraft-1.21.x-brightgreen?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-CC0-blue?style=for-the-badge)
 
-**Goiabada Addon** is a feature-packed utility, survival automation, and security addon for [Meteor Client](https://meteorclient.com/). Designed to enhance survival gameplay, automate tasks, and protect players against unexpected threats or server checks.
+**Goiabada Addon** is a feature-packed utility, survival automation, and security addon. Designed to enhance survival gameplay, automate repetitive tasks, and protect players against unexpected threats or server-side checks.
 
 ---
 
 ## ✨ Features & Modules
 
-All modules can be found inside the **Goiabada** category in the Meteor Client ClickGUI (Right Shift).
+All modules can be found inside the **Goiabada** category in the client's interface (default: `Right Shift`).
 
 ### 🛡️ 1. SpectatorGuard (`spectator-guard`)
 Monitors the server tab-list and automatically disconnects your client if another player or server admin switches to **Creative** or **Spectator** mode.
@@ -32,7 +33,7 @@ An advanced event-triggered automation system that performs defensive actions wh
   - `low-hunger`: Triggers when hunger falls below a configurable threshold (`hunger-threshold`).
 - **Actions:**
   - `pause-baritone`: Automatically pauses any active Baritone pathing or mining (`#pause`).
-  - `toggle-module`: Toggles any specified Meteor module on/off by name (e.g., `AutoEscape`, `killaura`).
+  - `toggle-module`: Toggles any specified client module on/off by name (e.g., `AutoEscape`, `KillAura`).
   - `custom-command`: Executes custom chat commands or messages (e.g., `/home`, `#goto 0 64 0`).
   - `cooldown-ticks`: Anti-spam timer to prevent consecutive command floods.
 
@@ -42,7 +43,7 @@ An advanced event-triggered automation system that performs defensive actions wh
 Continuously keeps your shield raised (holds Right Click) while intelligently managing inventory and player interactions.
 - **Settings:**
   - `only-when-equipped`: Only holds right-click when a shield is held in main hand or offhand.
-  - `pause-on-eat`: Automatically releases shield when eating or when `AutoEat` becomes active.
+  - `pause-on-eat`: Automatically releases shield when eating or when AutoEat becomes active.
   - `pause-in-screens`: Automatically pauses inside open GUI screens (Chests, Inventory, Chat) to prevent input conflicts.
 
 ---
@@ -78,7 +79,7 @@ Intelligent inventory management module that drops items gradually to avoid gett
 
 ## 🖥️ HUD Elements
 
-Goiabada registers custom HUD elements under the **Goiabada** group in the HUD editor:
+Goiabada registers custom HUD elements under the **Goiabada** group:
 - **`spectator-guard-hud`**: A clean visual overlay indicating whether `SpectatorGuard` is currently active (`ON` in green or `OFF` in red).
 
 ---
@@ -86,10 +87,9 @@ Goiabada registers custom HUD elements under the **Goiabada** group in the HUD e
 ## 📥 Installation
 
 1. Download and install **[Fabric Loader](https://fabricmc.net/)** for your Minecraft version.
-2. Download and place the **[Meteor Client](https://meteorclient.com/)** mod inside your `.minecraft/mods` folder.
-3. Download the compiled **Goiabada Addon `.jar`** file from Releases or build it locally.
-4. Place the Goiabada Addon `.jar` file inside your `.minecraft/mods` folder.
-5. Launch Minecraft! Open the ClickGUI (default: `Right Shift`) and look for the **Goiabada** category.
+2. Download the compiled **Goiabada Addon `.jar`** file from Releases or build it locally.
+3. Place the Goiabada Addon `.jar` file inside your `.minecraft/mods` folder.
+4. Launch Minecraft! Open the client's interface (default: `Right Shift`) and look for the **Goiabada** category.
 
 ---
 
@@ -105,7 +105,7 @@ To compile the addon yourself using Gradle:
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/goiabada-addon.git
+   git clone https://github.com/goiabada___/goiabada-addon.git
    cd goiabada-addon
    ```
 
